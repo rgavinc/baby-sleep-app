@@ -5,7 +5,20 @@ import useMeter from "./hooks/meteringHook";
 
 export default function App() {
   const [recording, setRecording] = useState();
+  const [targetLevel, setTargetLevel] = useState();
+  const [intensity, setIntensity] = useState(0);
   const meter = useMeter(recording);
+
+  useEffect(() => {
+    if (!targetLevel && meter) {
+      setTargetLevel(meter + (100 - meter) / 2);
+    }
+    if (meter > targetLevel) {
+      setIntensity(Math.min(intensity + 1, 4));
+    } else {
+      setIntensity(Math.max(intensity - 1, 0));
+    }
+  }, [meter]);
 
   async function startRecording() {
     try {
@@ -36,8 +49,9 @@ export default function App() {
   return (
     <View style={styles.container}>
       <Text>Meter: {meter}</Text>
+      <Text>Intensity: {intensity}</Text>
       <Button
-        title={recording ? "Stop Recording" : "Start Recording"}
+        title={recording ? "Stop Listening" : "Start Listening"}
         onPress={recording ? stopRecording : startRecording}
       />
     </View>
